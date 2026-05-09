@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: sentiment-aggregator
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/stockpulse}
+    username: ${POSTGRES_USER:stockpulse}
+    password: ${POSTGRES_PASSWORD:stockpulse_secret}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: sentiment-aggregator-group
+      auto-offset-reset: latest
+      enable-auto-commit: false
+      max-poll-records: 500
+    producer:
+      acks: 1
+      compression-type: lz4
+      linger-ms: 50
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  elasticsearch:
+    uris: ${ES_URL:http://localhost:9200}
+finbert:
+  url: ${FINBERT_URL:http://localhost:5000}
+  batch-size: 32
+  timeout-seconds: 15
+server:
+  port: 8082
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/stockpulse
+  data:
+    redis:
+      host: redis
+  elasticsearch:
+    uris: http://elasticsearch:9200
+  kafka:
+    bootstrap-servers: kafka:29092
+finbert:
+  url: http://finbert-service:5000

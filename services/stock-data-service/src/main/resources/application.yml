@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: stock-data-service
+  datasource:
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/stockpulse}
+    username: ${POSTGRES_USER:stockpulse}
+    password: ${POSTGRES_PASSWORD:stockpulse_secret}
+    hikari:
+      maximum-pool-size: 10
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    producer:
+      acks: 1
+      compression-type: lz4
+alpha-vantage:
+  api-key: ${ALPHA_VANTAGE_KEY:demo}
+fmp:
+  api-key: ${FMP_API_KEY:demo}
+server:
+  port: 8083
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/stockpulse
+  kafka:
+    bootstrap-servers: kafka:29092

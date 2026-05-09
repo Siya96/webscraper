@@ -1,0 +1,21 @@
+{
+  "mappings": {
+    "properties": {
+      "ticker":            { "type": "keyword" },
+      "source":            { "type": "keyword" },
+      "raw_text":          { "type": "text", "analyzer": "english" },
+      "sentiment_score":   { "type": "float" },
+      "sentiment_label":   { "type": "keyword" },
+      "influencer_weight": { "type": "float" },
+      "composite_score":   { "type": "float" },
+      "upvotes":           { "type": "integer" },
+      "author":            { "type": "keyword" },
+      "timestamp":         { "type": "date" }
+    }
+  },
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1,
+    "refresh_interval": "5s"
+  }
+}

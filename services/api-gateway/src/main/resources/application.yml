@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: sentiment-aggregator
+          uri: lb://sentiment-aggregator
+          predicates:
+            - Path=/api/v1/stocks/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: sentimentCB
+                fallbackUri: forward:/fallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 100
+                redis-rate-limiter.burstCapacity: 200
+        - id: websocket-service
+          uri: lb://websocket-service
+          predicates:
+            - Path=/ws/**
+        - id: stock-data-service
+          uri: lb://stock-data-service
+          predicates:
+            - Path=/api/v1/market/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: ["GET","POST","OPTIONS"]
+            allowedHeaders: "*"
+server:
+  port: 8080

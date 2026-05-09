@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "StockPulse",
+    "slug": "stockpulse",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "stockpulse",
+    "userInterfaceStyle": "dark",
+    "ios":     { "supportsTablet": true, "bundleIdentifier": "com.stockpulse.app" },
+    "android": { "adaptiveIcon": { "backgroundColor": "#0f0c29" }, "package": "com.stockpulse.app" },
+    "plugins": ["expo-router"]
+  }
+}

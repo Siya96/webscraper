@@ -1,0 +1,26 @@
+# Java
+target/
+*.class
+*.jar
+
+# Node
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+models/
+
+# Env
+.env
+*.env.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Expo
+.expo/

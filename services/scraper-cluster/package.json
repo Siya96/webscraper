@@ -1,0 +1,25 @@
+{
+  "name": "stockpulse-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:reddit":      "SCRAPER=reddit node src/index.js",
+    "start:twitter":     "SCRAPER=twitter node src/index.js",
+    "start:stocktwits":  "SCRAPER=stocktwits node src/index.js",
+    "start:wsb":         "SCRAPER=wsb node src/index.js",
+    "start:seekingalpha":"SCRAPER=seekingalpha node src/index.js"
+  },
+  "dependencies": {
+    "playwright": "^1.44.0",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "kafkajs": "^2.2.4",
+    "axios": "^1.7.2",
+    "p-queue": "^8.0.1",
+    "winston": "^3.13.0",
+    "dotenv": "^16.4.5",
+    "user-agents": "^1.1.228",
+    "fingerprint-generator": "^2.1.42"
+  }
+}
