@@ -1,1 +1,1 @@
-// TODO: paste full code from StockPulse documentation
+export { default } from '../../src/screens/StockDetailScreen';

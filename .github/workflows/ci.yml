@@ -1,25 +1,36 @@
 name: CI
+
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main]
+
 jobs:
+
   java-build:
+    name: Build Java Services
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'temurin'
           cache: 'maven'
-      - run: mvn -B package --enable-preview -DskipTests
+
+      - name: Build all Java services
         working-directory: services
-      - run: mvn -B test --enable-preview
+        run: mvn -B package --enable-preview -DskipTests
+
+      - name: Run tests
         working-directory: services
+        run: mvn -B test --enable-preview
 
   node-build:
+    name: Build Node Scraper
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,8 +41,11 @@ jobs:
           cache-dependency-path: services/scraper-cluster/package-lock.json
       - run: npm ci
         working-directory: services/scraper-cluster
+      - run: npm run lint
+        working-directory: services/scraper-cluster
 
   python-build:
+    name: Build Python FinBERT
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,20 +58,29 @@ jobs:
         working-directory: services/finbert-service
 
   docker-build:
+    name: Docker Build & Push
     needs: [java-build, node-build, python-build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Build & push all services
         run: |
-          for svc in api-gateway stock-data-service sentiment-aggregator websocket-service scraper-cluster finbert-service; do
-            docker buildx build --platform linux/amd64,linux/arm64 --push \
+          services=("api-gateway" "stock-data-service" "sentiment-aggregator" "websocket-service" "scraper-cluster" "finbert-service")
+          for svc in "${services[@]}"; do
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --push \
               -t stockpulse/$svc:${{ github.sha }} \
               -t stockpulse/$svc:latest \
               ./services/$svc

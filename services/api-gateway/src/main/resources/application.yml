@@ -17,19 +17,36 @@ spring:
               args:
                 redis-rate-limiter.replenishRate: 100
                 redis-rate-limiter.burstCapacity: 200
+                redis-rate-limiter.requestedTokens: 1
+
         - id: websocket-service
           uri: lb://websocket-service
           predicates:
             - Path=/ws/**
+          filters:
+            - RewritePath=/ws/(?<segment>.*), /ws/$\{segment}
+
         - id: stock-data-service
           uri: lb://stock-data-service
           predicates:
             - Path=/api/v1/market/**
+
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedOrigins: "*"
             allowedMethods: ["GET","POST","OPTIONS"]
             allowedHeaders: "*"
-server:
-  port: 8080
+
+      default-filters:
+        - name: Retry
+          args:
+            retries: 3
+            statuses: BAD_GATEWAY,GATEWAY_TIMEOUT
+        - AddResponseHeader=X-Response-Time, ${spring.application.name}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
